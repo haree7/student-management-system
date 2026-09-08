@@ -7,9 +7,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
+
+import jakarta.servlet.ServletContext;
 
 import com.pst.sms_mini.bo.StudentBo;
 import com.pst.smsmini.dto.StudentDto;
@@ -25,15 +27,18 @@ public class StudentDao {
     private static final String DELETE =
             "DELETE FROM student WHERE id = ?";
 
-    private Connection con = null;
-
-    private Connection getConnection()
+    private Connection getConnection(ServletContext context)
             throws SQLException, IOException {
 
         Properties properties = new Properties();
 
-        try (FileInputStream input =
-                     new FileInputStream("config/database.properties")) {
+        try (InputStream input =
+                     context.getResourceAsStream("/WEB-INF/database.properties")) {
+
+            if (input == null) {
+                throw new IOException(
+                        "database.properties not found in WEB-INF");
+            }
 
             properties.load(input);
         }
@@ -45,13 +50,13 @@ public class StudentDao {
         return DriverManager.getConnection(url, username, password);
     }
 
-    public int addStudent(StudentBo bo)
+    public int addStudent(StudentBo bo, ServletContext context)
             throws ClassNotFoundException, SQLException {
 
         Class.forName("com.mysql.cj.jdbc.Driver");
 
         try {
-            Connection con = getConnection();
+            Connection con = getConnection(context);
 
             PreparedStatement ps = con.prepareStatement(QUERY);
 
@@ -67,11 +72,12 @@ public class StudentDao {
             return i;
 
         } catch (IOException e) {
-            throw new SQLException("Unable to load database configuration.", e);
+            throw new SQLException(
+                    "Unable to load database configuration.", e);
         }
     }
 
-    public List<StudentDto> getAllStudents()
+    public List<StudentDto> getAllStudents(ServletContext context)
             throws ClassNotFoundException, SQLException {
 
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -79,7 +85,7 @@ public class StudentDao {
         List<StudentDto> studentDtoList = new ArrayList<>();
 
         try {
-            Connection con = getConnection();
+            Connection con = getConnection(context);
 
             PreparedStatement ps = con.prepareStatement(QUERY2);
             ResultSet rs = ps.executeQuery();
@@ -89,12 +95,6 @@ public class StudentDao {
                 int id = rs.getInt(1);
                 String name = rs.getString(2);
                 String dob = rs.getString(3);
-
-                System.out.println(
-                        "id :" + id +
-                        " name :" + name +
-                        " dob :" + dob
-                );
 
                 StudentDto dto = new StudentDto();
 
@@ -112,17 +112,18 @@ public class StudentDao {
             return studentDtoList;
 
         } catch (IOException e) {
-            throw new SQLException("Unable to load database configuration.", e);
+            throw new SQLException(
+                    "Unable to load database configuration.", e);
         }
     }
 
-    public int DeleteStudent(int id)
+    public int DeleteStudent(int id, ServletContext context)
             throws ClassNotFoundException, SQLException {
 
         Class.forName("com.mysql.cj.jdbc.Driver");
 
         try {
-            Connection con = getConnection();
+            Connection con = getConnection(context);
 
             PreparedStatement ps = con.prepareStatement(DELETE);
 
@@ -138,7 +139,8 @@ public class StudentDao {
             return result;
 
         } catch (IOException e) {
-            throw new SQLException("Unable to load database configuration.", e);
+            throw new SQLException(
+                    "Unable to load database configuration.", e);
         }
     }
 }
