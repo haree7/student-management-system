@@ -44,3 +44,21 @@ Business Object (BO)
 DAO
     ↓
 MySQL Database
+
+## Screenshots
+
+### Home Page
+
+![Home Page](screenshots/home-page.png)
+
+### Add Student
+
+![Add Student](screenshots/add-student.png)
+
+### View All Students
+
+![View All Students](screenshots/view-all-students.png)
+
+### Delete Student
+
+![Delete Student](screenshots/delete-student.png)
