@@ -1,0 +1,19 @@
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Build output
+build/
+
+# Local database configuration
+config/database.properties
+
+# Backup files
+StudentDao_backup.java
+
+# MySQL Connector JAR
+src/main/webapp/WEB-INF/lib/mysql-connector-j-9.7.0.jar
+
+# OS files
+.DS_Store
